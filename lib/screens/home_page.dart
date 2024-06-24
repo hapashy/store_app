@@ -28,26 +28,37 @@ class HomePage extends StatelessWidget {
         body: Padding(
             padding: const EdgeInsets.only(left: 16, right: 16, top: 65),
             child: FutureBuilder<List<ProductModel>>(
-                future: AllProductServices().getAllProducts(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    List<ProductModel> products = snapshot.data!;
-                    return GridView.builder(
-                        itemCount: products.length,
-                        clipBehavior: Clip.none,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 1.5,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 80),
-                        itemBuilder: (context, index) {
-                          return CustomCard(
-                            product: products[index],
-                          );
-                        });
-                  } else {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                })));
+  future: AllProductServices().getAllProducts(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      // عرض مؤشر التحميل
+      return Center(child: CircularProgressIndicator());
+    } else if (snapshot.hasError) {
+      // معالجة حالة الخطأ
+      return Center(child: Text('Error: ${snapshot.error}'));
+    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+      // معالجة حالة عدم وجود بيانات
+      return Center(child: Text('No products available'));
+    } else {
+      // عرض قائمة المنتجات إذا كانت البيانات موجودة
+      List<ProductModel> products = snapshot.data!;
+      return GridView.builder(
+        itemCount: products.length,
+        clipBehavior: Clip.none,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 1.5,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 80,
+        ),
+        itemBuilder: (context, index) {
+          return CustomCard(
+            product: products[index],
+          );
+        },
+      );
+    }
+  },
+)));
   }
 }
