@@ -1,6 +1,5 @@
 import 'package:store_app/helper/api.dart';
 import 'package:store_app/models/product_model.dart';
-import 'package:http/http.dart' as http;
 
 class AddProduct {
   Future<ProductModel> addProduct(
